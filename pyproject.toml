@@ -1,0 +1,35 @@
+[project]
+name = "fb-sonar-encoder"
+version = "0.0.0"
+description = "A toy example of a Concept-Based Encoder using FAIR's SONAR"
+requires-python = ">=3.12"
+dependencies = [
+    "fairseq2",
+    "sonar-space>=0.4.0",
+    "wtpsplit[onnx-gpu]>=2.0.0",
+    "sacremoses>=0.0.53"
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.metadata]
+allow-direct-references = true 
+
+[[tool.hatch.source]]
+name = "fairseq2"
+url = "https://fair.pkg.atmeta.com/fairseq2/whl/pt2.7.0/cu126"
+type = "index"
+
+[[tool.hatch.source]]
+name = "pytorch"
+url = "https://download.pytorch.org/whl/cu126"
+type = "index"
+
+[tool.hatch.build.targets.wheel]
+packages = ["fb_sonar_translator"]
+
+[tool.hatch.dependencies]
+torch = {version = "2.6.0", source = "pytorch"}
+torchaudio = {version = "2.6.0", source = "pytorch"} 
