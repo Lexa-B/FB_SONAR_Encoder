@@ -7,6 +7,7 @@ warnings.filterwarnings('ignore', message='.*Torchaudio\'s I/O functions.*')
 
 from sonar.inference_pipelines.text import TextToEmbeddingModelPipeline
 import torch
+from safetensors.torch import save_file
 import re
 import os
 import argparse
@@ -45,9 +46,13 @@ class Encoder:
         embedding = self.Encode(text)
         print(f"Encoded: {text} → {embedding}")
 
-        # Save as torch tensor
-        torch.save(embedding, output_file)
-        print(f"Embedding saved as tensor to {output_file}")
+        # Save as safetensors or raw PyTorch
+        if args.raw_pytorch:
+            torch.save(embedding, output_file)
+            print(f"Embedding saved as raw PyTorch to {output_file}")
+        else:
+            save_file({"embedding": embedding}, output_file)
+            print(f"Embedding saved as safetensors to {output_file}")
 
 # Example usage
 if __name__ == "__main__":
@@ -59,18 +64,19 @@ if __name__ == "__main__":
     parser.add_argument('-t', '--input_text', type=str, required=True, help='Input text to encode.')
     parser.add_argument('-o', '--output_name', type=str, required=True, help='Name to save the encoded tensor.')
     parser.add_argument('-l', '--lang_source', type=str, required=True, help='Language to encode from (FLORES-200) (e.g., jpn_Jpan, eng_Latn).')
+    parser.add_argument('-r', '--raw_pytorch', action='store_true', help='Save as raw PyTorch file (.pt) over .safetensors.')
     parser.add_argument('-v', '--verbose', action='store_true', help='Enable verbose output.')
     args = parser.parse_args()
 
     if args.verbose:
         print("Verbose mode enabled.")
         print(f"Language Source: {args.lang_source}")
-        print(f"Output File: ./fb_sonar_encoder/OutputData/{args.output_name}.pt")
+        print(f"Output File: ./fb_sonar_encoder/OutputData/{args.output_name}.{'pt' if args.raw_pytorch else 'safetensors'}")
 
     encoder = Encoder(LangSource=args.lang_source, Verbose=args.verbose)
     encoder.EncodeText(
         args.input_text,
-        os.path.join(script_dir, "OutputData", f"{args.output_name}.pt")
+        os.path.join(script_dir, "OutputData", f"{args.output_name}.{'pt' if args.raw_pytorch else 'safetensors'}")
     )   
 
     print(f"Text: \"{args.input_text}\", Language Source: {args.lang_source}, Verbose: {args.verbose}")

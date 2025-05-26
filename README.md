@@ -23,6 +23,7 @@ source .venv/bin/activate
 * `-t`: Input text to encode.
 * `-o`: Name to save the encoded tensor.
 * `-l`: Language to encode from (FLORES-200 code) (e.g., jpn_Jpan, eng_Latn).
+* `-r`: Save as raw PyTorch file (.pt) over .safetensors.
 * `-v`: Enable verbose output.
 
 ### Example
